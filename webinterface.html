@@ -1,0 +1,108 @@
+<!DOCTYPE html>
+<html>
+<head>
+	<meta charset="utf-8">
+	<title>JaNaG Web Interface test</title>
+</head>
+<body>
+<h1>JaNaG Web Interface test</h1>
+
+<p>Test Java Name Generator via Web and JQUERY.</p>
+
+<!-- Form start -->
+<form id="janag-form">
+	<div>
+		<label for="janag-pattern">Pattern:</label>
+		<select id="janag-pattern"></select>
+	</div>
+    <div>
+        <label for="janag-gender">Gender:</label>
+        <select id="janag-gender"></select>
+    </div>
+    <div>
+        <label for="janag-count">Number to generate:</label>
+        <select id="janag-count">
+            <option value="1">1</option>
+            <option value="5">5</option>
+            <option value="10">10</option>
+            <option value="20">20</option>
+        </select>
+    </div>
+    <div>
+        <textarea id="janag-output" cols="40" rows="10"></textarea>
+    </div>
+    <div>
+        <input type="button" id="janag-generate" value="Generate!">
+    </div>
+</form>
+<!-- Form end -->
+
+<!-- JQuery stuff start -->
+	<script src="http://code.jquery.com/jquery.min.js"></script>
+	<script>
+        var JaNaG = {
+            // CHANGE THIS TO YOUR NEEDS
+            server: 'http://localhost:12023/',
+            language: 'de',
+            // END CHANGE
+            init: function() {
+                this.loadPatterns();
+                this.initGenerateListener();
+            },
+            loadPatterns: function() {
+                // get JSON array
+                $.getJSON(this.server + 'patterns/' + this.language, function(data) {
+                    var items = [];
+                    for (var i = 0; i < data.length; i++)
+                        items.push("<option value='" + data[i].replace(/"/g, '&quot;') + "'>" + data[i] + "</option>");
+                    $('#janag-pattern').html(items.join(""));
+                    // now load genders of first element
+                    JaNaG.loadGenders();
+                    JaNaG.initPatternListener();
+                });
+            },
+            loadGenders: function() {
+                // get value of pattern
+                var pattern = $('#janag-pattern').val();
+                if (pattern) {
+                    // get JSON array
+                    $.getJSON(this.server + 'genders/' + this.language + '/' + encodeURIComponent(pattern), function(data) {
+                        var items = [];
+                        for (var i = 0; i < data.length; i++)
+                            items.push("<option value='" + data[i].replace(/"/g, '&quot;') + "'>" + data[i] + "</option>");
+                        $('#janag-gender').html(items.join(""));
+                    });
+                } else {
+                    $('#janag-gender').html('');
+                }
+            },
+            initPatternListener: function() {
+                $('#janag-pattern').change(function() {
+                    JaNaG.loadGenders();
+                });
+            },
+            initGenerateListener: function() {
+                $('#janag-generate').click(function() {
+                    // get values
+                    var pattern = $('#janag-pattern').val();
+                    var gender = $('#janag-gender').val();
+                    var count = $('#janag-count').val();
+                    if (pattern && gender && count) {
+                        // get JSON array
+                        $.getJSON(JaNaG.server + 'get/' + JaNaG.language + '/' + encodeURIComponent(pattern) + '/' + encodeURIComponent(gender) + '/' + count, function(data) {
+                            $('#janag-output').val(data.join("\n"));
+                        });
+                    } else {
+                        alert('ERROR');
+                    }
+                });
+            }
+        };
+
+		jQuery(document).ready(function($) {
+            JaNaG.init();
+		});
+	</script>
+<!-- JQuery stuff end -->
+</body>
+</html>
