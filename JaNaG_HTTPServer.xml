@@ -9,21 +9,21 @@
         	<include name="readme.txt" />
 		</fileset>
     	
-    	<delete file="JaNaG_Server.jar"/>
+    	<delete file="JaNaG_HTTPServer.jar"/>
     	<copy todir="bin/de/beimax/janag">
         	<fileset refid="resources" />
     	</copy>
-        <jar destfile="JaNaG_Server.jar" filesetmanifest="mergewithoutmain">
+        <jar destfile="JaNaG_HTTPServer.jar" filesetmanifest="mergewithoutmain">
             <manifest>
                 <attribute name="Built-By" value="${user.name}"/>
-                <attribute name="Main-Class" value="de.beimax.janag.NamegenServer"/>
+                <attribute name="Main-Class" value="de.beimax.janag.NamegenHTTPServer"/>
                 <attribute name="Class-Path" value="."/>
             </manifest>
             <fileset dir="bin" >
                	<exclude name="**/NamegenCML.class"/>
                	<exclude name="**/NamegenApplet.class"/>
-               	<exclude name="**/NamegenGUI*.class"/>
-                <exclude name="**/NamegenHTTPServer.class"/>
+                <exclude name="**/NamegenGUI*.class"/>
+                <exclude name="**/NamegenServer.class"/>
         	</fileset>
         </jar>
     </target>

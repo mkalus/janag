@@ -23,6 +23,7 @@
                	<exclude name="**/NamegenServer.class"/>
                	<exclude name="**/NamegenApplet.class"/>
                	<exclude name="**/NamegenGUI*.class"/>
+                <exclude name="**/NamegenHTTPServer.class"/>
         	</fileset>
         </jar>
     </target>
