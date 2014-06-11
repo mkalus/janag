@@ -3,6 +3,8 @@ package fi.iki.elonen;
 import java.io.IOException;
 
 public class ServerRunner {
+    private static boolean finished = false;
+
     public static void run(Class serverClass) {
         try {
             executeInstance((NanoHTTPD) serverClass.newInstance());
@@ -19,14 +21,35 @@ public class ServerRunner {
             System.exit(-1);
         }
 
-        System.out.println("Server started, Hit Enter to stop.\n");
+        // add shutdown handler
+        Runtime.getRuntime().addShutdownHook(new Thread(new ShutdownHandler(server)));
 
-        try {
-            System.in.read();
-        } catch (Throwable ignored) {
+        System.out.println("Server started...\n");
+
+        while (!finished) {
+            try {
+                Thread.sleep(1000);
+            } catch (Throwable ignored) {
+            }
+        }
+    }
+
+    /**
+     * Shutdown hook executable
+     */
+    private static class ShutdownHandler implements Runnable
+    {
+        private NanoHTTPD server;
+
+        public ShutdownHandler(NanoHTTPD server) {
+            this.server = server;
         }
 
-        server.stop();
-        System.out.println("Server stopped.\n");
+        public void run()
+        {
+            finished = true;
+            this.server.stop();
+            System.out.println("Server stopped.\n");
+        }
     }
 }
