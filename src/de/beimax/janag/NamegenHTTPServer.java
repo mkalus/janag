@@ -22,6 +22,7 @@ import fi.iki.elonen.NanoHTTPD;
 import fi.iki.elonen.ServerRunner;
 
 import java.io.IOException;
+import java.util.Map;
 
 /**
  * @author mkalus Starter Class to start a Namegenerator HTTP/JSON server.
@@ -93,11 +94,27 @@ public class NamegenHTTPServer {
         }
 
         /**
+         * Create response and add CORS headers
+         * @param status
+         * @param mimeType
+         * @param txt
+         * @return
+         */
+        private Response getResponse(Response.IStatus status, String mimeType, String txt) {
+            Response response = new Response(status, mimeType, txt);
+            // allow CORS
+            response.addHeader("Access-Control-Allow-Origin", "*");
+            response.addHeader("Access-Control-Allow-Methods", "GET");
+            response.addHeader("Access-Control-Max-Age", "3600");
+            return response;
+        }
+
+        /**
          * print error
          * @return
          */
         private Response error() {
-            return new Response(Response.Status.INTERNAL_ERROR, "text/plain", "ERROR");
+            return getResponse(Response.Status.INTERNAL_ERROR, "text/plain", "ERROR");
         }
 
         /**
@@ -105,7 +122,7 @@ public class NamegenHTTPServer {
          * @return
          */
         private Response error404() {
-            return new Response(Response.Status.NOT_FOUND, "text/plain", "NOT FOUND");
+            return getResponse(Response.Status.NOT_FOUND, "text/plain", "NOT FOUND");
         }
 
         /**
@@ -113,7 +130,7 @@ public class NamegenHTTPServer {
          * @return
          */
         private Response help() {
-            return new Response(Response.Status.OK, "text/plain", "JaNaG Java Name Generator - HTTP/JSON Server\n\nUse the following uris to work with JaNaG:\n\n" +
+            return getResponse(Response.Status.OK, "text/plain", "JaNaG Java Name Generator - HTTP/JSON Server\n\nUse the following uris to work with JaNaG:\n\n" +
                     "/help - print this help\n" +
                     "/langs - get JSON list of languages\n" +
                     "/patterns/[lang] - get JSON list of patterns\n" +
@@ -126,7 +143,7 @@ public class NamegenHTTPServer {
          * @return
          */
         private Response langs() {
-            return new Response(Response.Status.OK, "application/json", "[\"en\",\"de\"]");
+            return getResponse(Response.Status.OK, "application/json", "[\"en\",\"de\"]");
         }
 
         /**
@@ -142,7 +159,7 @@ public class NamegenHTTPServer {
                 return error();
             }
 
-            return new Response(Response.Status.OK, "application/json", arrayToJSON(ng.getPatterns(lang)));
+            return getResponse(Response.Status.OK, "application/json", arrayToJSON(ng.getPatterns(lang)));
         }
 
         /**
@@ -162,7 +179,7 @@ public class NamegenHTTPServer {
             }
 
             try {
-                return new Response(Response.Status.OK, "application/json", arrayToJSON(ng.getGenders(parameters[1], lang)));
+                return getResponse(Response.Status.OK, "application/json", arrayToJSON(ng.getGenders(parameters[1], lang)));
             } catch (Exception e) {
                 return error();
             }
@@ -187,7 +204,7 @@ public class NamegenHTTPServer {
             int count = parameters.length==3?1:Integer.parseInt(parameters[3]);
 
             try {
-                return new Response(Response.Status.OK, "application/json", arrayToJSON(ng.getRandomName(parameters[1], parameters[2], count, lang)));
+                return getResponse(Response.Status.OK, "application/json", arrayToJSON(ng.getRandomName(parameters[1], parameters[2], count, lang)));
             } catch (Exception e) {
                 return error();
             }
