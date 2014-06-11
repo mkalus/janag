@@ -34,7 +34,8 @@ Command line and server modes
 
 JaNaG support multiple modes:
   * GUI mode (Desktop)
-  * Server mode (to be queried using tcp)
+  * Server mode (to be queried using tcp, default port is 12022)
+  * HTTP server mode (JSON, default port is 12023)
   * Command line mode (client or local)
   * Applet (kind of old fashioned...)
 
