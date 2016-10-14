@@ -4,4 +4,4 @@ bin/
 .project
 .settings/
 JaNaG_Source.*
-
+/target/
